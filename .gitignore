@@ -32,3 +32,5 @@ to-do.text
 protected
 *.fig
 *.tex
+*.JPG
+*.text
