@@ -34,3 +34,6 @@
 
 (define (a-sentence)
  (append (a-noun-phrase) (a-verb-phrase)))
+
+(define (slow-sentence? words)
+ (not (not (member words (all-values (a-sentence))))))
