@@ -1,0 +1,23 @@
+[[set([]), set(['d']), set(['np']), set([]), set([]), set([]), set(['s'])],
+ [set([]), set([]), set(['n']), set([]), set([]), set([]), set([])],
+ [set([]), set([]), set([]), set(['v']), set([]), set([]), set(['vp'])],
+ [set([]), set([]), set([]), set([]), set(['p']), set([]), set(['pp'])],
+ [set([]), set([]), set([]), set([]), set([]), set(['d']), set(['np'])],
+ [set([]), set([]), set([]), set([]), set([]), set([]), set(['n'])],
+ [set([]), set([]), set([]), set([]), set([]), set([]), set([])]]
+True
+[[set([]), set(['d']), set(['np']), set([]), set([]), set([])],
+ [set([]), set([]), set(['n']), set([]), set([]), set([])],
+ [set([]), set([]), set([]), set(['v']), set([]), set([])],
+ [set([]), set([]), set([]), set([]), set(['p']), set([])],
+ [set([]), set([]), set([]), set([]), set([]), set(['d'])],
+ [set([]), set([]), set([]), set([]), set([]), set([])]]
+False
+[[set([]), set(['d']), set(['np']), set([]), set([]), set([]), set(['s']), set([])],
+ [set([]), set([]), set(['n']), set([]), set([]), set([]), set([]), set([])],
+ [set([]), set([]), set([]), set(['v']), set([]), set([]), set(['vp']), set([])],
+ [set([]), set([]), set([]), set([]), set(['p']), set([]), set(['pp']), set([])],
+ [set([]), set([]), set([]), set([]), set([]), set(['d']), set(['np']), set([])],
+ [set([]), set([]), set([]), set([]), set([]), set([]), set(['n']), set([])],
+ [set([]), set([]), set([]), set([]), set([]), set([]), set([]), set(['n'])],
+ [set([]), set([]), set([]), set([]), set([]), set([]), set([]), set([])]]
