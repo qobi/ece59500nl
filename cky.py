@@ -30,7 +30,7 @@ grammar = [("s", "np", "vp"),
            ("vp", "v", "pp")]
 
 # O(n^3)
-def cky(words, lexicon, grammar):
+def cky(words, category):
     n = len(words)              # O(n)
     chart = [[set() for i in range(n+1)] for j in range(n+1)] # O(n^2)
     # O(n)
@@ -46,10 +46,15 @@ def cky(words, lexicon, grammar):
                 for A, B, C in grammar:
                     if B in chart[i][k] and C in chart[k][j]:
                         chart[i][j] |= set([A])
+    #print chart
     # O(1)
-    if "s" in chart[0][n]:
+    if category in chart[0][n]:
         return True
     else:
         return False
 
-print cky(["some", "pawn", "is", "on", "some", "square"], lexicon, grammar)
+print cky(("some", "pawn", "is", "on", "some", "square"), "s")
+
+print cky(("some", "pawn", "is", "on", "some"), "s")
+
+print cky(("some", "pawn", "is", "on", "some", "square", "square"), "s")
