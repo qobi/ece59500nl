@@ -1,3 +1,5 @@
+debug = True
+
 lexicon = {"square": set(["n"]),
            "piece": set(["n"]),
            "pawn": set(["n"]),
@@ -29,20 +31,10 @@ grammar = [("s", "np", "vp"),
            ("vp", "v", "np"),
            ("vp", "v", "pp")]
 
-def memoize(f):
-    chart = {}
-    def internal(x):
-        if x in chart:
-            return chart[x]
-        else:
-            result = f(x)
-            chart[x] = result
-            return result
-    return internal
-
 def top_down(args):
     words, category = args
-    #print words, category
+    if debug:
+        print words, category
     n = len(words)
     if n==1:
         if category in lexicon[words[0]]:
@@ -55,8 +47,6 @@ def top_down(args):
                     top_down((words[k:n], C))):
                     return True
     return False
-
-top_down = memoize(top_down)
 
 print top_down((("some", "pawn", "is", "on", "some", "square"), "s"))
 
