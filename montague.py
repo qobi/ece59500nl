@@ -96,7 +96,7 @@ lexicon = {
     "some": [(determiner,
               lambda noun: (
                   lambda noun1: (
-                      any((noun(x) and noun1(x)) for x in  objects))))],
+                      any((noun(x) and noun1(x)) for x in objects))))],
     "the": [(determiner,
              lambda noun: (
                  lambda noun1: (

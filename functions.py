@@ -124,14 +124,16 @@ u, v = f(x, y)
 
 # typedef P = NP->(N<-N)
 
-# primitive type: object boolean
+# primitive types: object boolean
 # typedef S = boolean
-# typedef VP = alpha
+# typedef VP = S<-NP
 # typedef N = object->S
 # typedef P = NP->(N<-N)
 # typedef PP = N<-N
-# typedef NP = beta
-# typedef V = gammar
+# typedef NP = N->S
+# typedef Vintrans = S<-NP
+# typedef D = N->NP
+# typedef Vtrans = NP->VP
 
 foo = lambda x, y: x+y
 bar = lambda x, y: x+y
@@ -140,3 +142,94 @@ quux = lambda x, y: x+y
 
 x+y==y+x
 3+4==4+3
+
+# some pawn:NP
+# the pawn:NP
+# some:N->NP(pawn:N):NP
+# some:D
+
+# some pawn moves:S
+# some(pawn) moves:S
+# moves:S<-NP(some:D(pawn:N):NP):S
+# captures:Vtrans(some:D(bishop:N):NP):VP(some:D(pawn:N):NP):S
+
+all(lambda x: P(x), objects)
+some(lambda x: P(x), objects)
+
+all(lambda x: P(x))
+some(lambda x: P(x))
+
+all([P(x) for x in objects])
+any([P(x) for x in objects])
+
+# every pawn moves
+
+all(lambda x: pawn(x) implies moves(x))
+all(lambda x: (not pawn(x)) or moves(x))
+
+all(lambda x: pawn(x)->moves(x))
+
+moves:Vintrans
+moves: S<-NP
+moves: boolean<-NP
+
+moves = lambda subject_NP: subject_NP((lambda x: moves(x)):NP->VP)
+
+every = (
+    lambda noun: (
+        lambda noun1: (
+            all(lambda x: noun(x)->noun1(x)))))
+
+pawn = (lambda x: pawn(x))
+
+every(pawn) = (
+    (lambda noun: (
+        lambda noun1: (
+            all(lambda x: noun(x)->noun1(x)))))
+    (lambda x: pawn(x)))
+
+every(pawn) = (
+    (lambda noun: (
+        lambda noun1: (
+            all(lambda y: noun(x)->noun1(y)))))
+    (lambda x: pawn(x)))
+
+every(pawn) = (
+    lambda noun1: (
+        all(lambda y: pawn(x)->noun1(y))))
+
+move(pawn) = all(lambda y: pawn(x)->moves(y))
+
+moves(noun1) = all(lambda y: noun1(x)->moves(y))
+
+moves = lambda noun1: all(lambda x: noun1(x)->moves(x))
+
+moves = lambda subject_np: subject_np(lambda x: moves(x))
+
+moves(every(pawn)) = (
+    (lambda subject_np: subject_np(lambda x: moves(x)))
+    (lambda noun1: (
+        all(lambda x: pawn(x)->noun1(x)))))
+
+moves(every(pawn)) = (
+    (lambda noun1: (
+        all(lambda x: pawn(x)->noun1(x))))
+    (lambda x: moves(x)))
+
+moves(every(pawn)) = (
+    all(lambda x: pawn(x)->(lambda y: moves(y))(x)))
+
+moves(every(pawn)) = (
+    all(lambda x: pawn(x)->moves(x)))
+
+every = (
+    lambda noun: (
+        lambda noun1: (
+            all(lambda x: noun(x)->noun1(x)))))
+
+pawn = (lambda x: pawn(x))
+
+moves = lambda subject_np: subject_np(lambda x: moves(x))
+
+moves(every(pawn)) = (
+    all(lambda x: pawn(x)->moves(x)))
