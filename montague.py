@@ -44,10 +44,11 @@ def of(x, y):
     else:
         return None
 
+s = "boolean"
 noun = ("object", "->", "boolean")
 adjective = (noun, "->", noun)
 np = (noun, "->", "boolean")
-vp = ("boolean", "<-", np)
+vp = (s, "<-", np)
 determiner = (noun, "->", np)
 pp = (noun, "<-", noun)
 preposition = (np, "->", pp)
@@ -117,10 +118,10 @@ lexicon = {
            (verb_np,
             lambda object_np: (
                 lambda subject_np: (
-                    object_np(lambda x: subject_np(lambda y: x==y))))),
+                    object_np(lambda y: subject_np(lambda x: x==y))))),
            (verb_pp,
             lambda object_pp: (
-                lambda subject_np: subject_np(object_pp(lambda x: True)))),
+                lambda subject_np: subject_np(object_pp(lambda y: True)))),
            (verb_pp,
             lambda object_pp: (
                 lambda subject_np: (
