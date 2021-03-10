@@ -101,7 +101,7 @@ lexicon = {
     "the": [(determiner,
              lambda noun: (
                  lambda noun1: (
-                     (noun1(filter(noun, objects)[0])
+                     noun1(filter(noun, objects)[0]
                      if len(filter(noun, objects))==1
                       # this implements a semantic constraint
                      else None))))],
@@ -154,10 +154,48 @@ def top_down(words):
                             results.append((C[0], result))
         return results
 
-def meaning(words):
+def top_down_meaning(words):
     truths = [truth
               for category, truth in top_down(words)
               if category=="boolean"]
+    if any([(truth!=True and truth!=False) for truth in truths]):
+        raise RuntimeError("This shouldn't happen")
+    if len(truths)==0:
+        return "ungrammatical"
+    elif True in truths and False in truths:
+        return "ambiguous"
+    elif True in truths:
+        return True
+    elif False in truths:
+        return False
+    else:
+        raise RuntimeError("This shouldn't happen")
+
+def shift_reduce(stack, words):
+    results = []
+    if len(words)==0 and len(stack)==1 and stack[0][0]=="boolean":
+        return [stack[0][1]]
+    if len(words)>=1:
+        for entry in lexicon[words[0]]:
+            results += shift_reduce([entry]+stack, words[1:])
+    if (len(stack)>=2 and
+        isinstance(stack[1][0], tuple) and
+        stack[1][0][1]=="->" and
+        stack[1][0][0]==stack[0][0]):
+        results += shift_reduce([(stack[1][0][2],
+                                  stack[1][1](stack[0][1]))]+stack[2:], words)
+    if (len(stack)>=2 and
+        isinstance(stack[0][0], tuple) and
+        stack[0][0][1]=="<-" and
+        stack[0][0][2]==stack[1][0]):
+        results += shift_reduce([(stack[0][0][0],
+                                  stack[0][1](stack[1][1]))]+stack[2:], words)
+    return results
+
+def shift_reduce_meaning(words):
+    truths = shift_reduce([], words)
+    if any([(truth!=True and truth!=False) for truth in truths]):
+        raise RuntimeError("This shouldn't happen")
     if len(truths)==0:
         return "ungrammatical"
     elif True in truths and False in truths:
