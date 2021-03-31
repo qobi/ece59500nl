@@ -1,191 +1,137 @@
-from math import exp
+import math
 
-def make_tape(primal, factors, tapes, fanout, cotangent):
-    return [primal, factors, tapes, fanout, cotangent]
+class cobundle:
+    def __init__(self, prim, tape):
+        self.prim = prim
+        self.tape = tape
+    def __pos__(self): return self
+    def __neg__(self): return 0-self
+    def __add__(self, y): return plus(self, y)
+    def __radd__(self, x): return plus(x, self)
+    def __sub__(self, y): return minus(self, y)
+    def __rsub__(self, x): return minus(x, self)
+    def __mul__(self, y): return times(self, y)
+    def __rmul__(self, x): return times(x, self)
+    def __div__(self, y): return divide(self, y)
+    def __rdiv__(self, x): return divide(x, self)
+    def __truediv__(self, y): return divide(self, y)
+    def __rtruediv__(self, x): return divide(x, self)
+    def __lt__(self, x): return lt(self, x)
+    def __le__(self, x): return le(self, x)
+    def __gt__(self, x): return gt(self, x)
+    def __ge__(self, x): return ge(self, x)
+    def __eq__(self, x): return eq(self, x)
+    def __ne__(self, x): return ne(self, x)
 
-def tape_primal(tape):
-    [primal, factors, tapes, fanout, cotangent] = tape
-    return primal
+class tape:
+    def __init__(self, factors, tapes, fanout, cotg):
+        self.factors = factors
+        self.tapes = tapes
+        self.fanout = fanout
+        self.cotg = cotg
 
-def tape_factors(tape):
-    [primal, factors, tapes, fanout, cotangent] = tape
-    return factors
+def cobun(x, factors, tapes): return cobundle(x, tape(factors, tapes, 0, 0))
 
-def tape_tapes(tape):
-    [primal, factors, tapes, fanout, cotangent] = tape
-    return tapes
+def variable(x): return cobun(x, [], [])
 
-def tape_fanout(tape):
-    [primal, factors, tapes, fanout, cotangent] = tape
-    return fanout
+def determine_fanout(tape):
+    tape.fanout += 1
+    if tape.fanout==1:
+        for tape in tape.tapes: determine_fanout(tape)
 
-def tape_cotangent(tape):
-    [primal, factors, tapes, fanout, cotangent] = tape
-    return cotangent
+def initialize_cotg(tape):
+    tape.cotg = 0
+    tape.fanout -= 1
+    if tape.fanout==0:
+        for tape in tape.tapes: initialize_cotg(tape)
 
-def set_tape_fanout(tape, fanout):
-    tape[3] = fanout
+def reverse_sweep(cotg, tape):
+    tape.cotg = tape.cotg+cotg
+    tape.fanout -= 1
+    if tape.fanout==0:
+        cotg = tape.cotg
+        for factor, tape in zip(tape.factors, tape.tapes):
+            reverse_sweep(cotg*factor, tape)
 
-def increment_tape_fanout(tape):
-    set_tape_fanout(tape, tape_fanout(tape)+1)
-
-def decrement_tape_fanout(tape):
-    set_tape_fanout(tape, tape_fanout(tape)-1)
-
-def set_tape_cotangent(tape, cotangent):
-    tape[4] = cotangent
-
-def is_tape(thing):
-    return type(thing)==list
-
-def lift_primal_to_tape(primal):
-    return make_tape(primal, [], [], 0, 0)
-
-def ad_plus(x, y):
-    if is_tape(x):
-        if is_tape(y):
-            increment_tape_fanout(x)
-            increment_tape_fanout(y)
-            return make_tape(ad_plus(tape_primal(x), tape_primal(y)),
-                             [1, 1],
-                             [x, y],
-                             0,
-                             0)
-        else:
-            return ad_plus(x, lift_primal_to_tape(y))
+def cotg(y, x):
+    if isinstance(y, cobundle):
+        determine_fanout(y.tape)
+        initialize_cotg(y.tape)
+        determine_fanout(y.tape)
+        reverse_sweep(1, y.tape)
+        return cotg(y.prim, x)
     else:
-        if is_tape(y):
-            return ad_plus(lift_primal_to_tape(x), y)
-        else:
-            return x+y
+        if isinstance(x, list): return [xi.tape.cotg for xi in x]
+        else: return x.tape.cotg
 
-def ad_minus(x, y):
-    if is_tape(x):
-        if is_tape(y):
-            increment_tape_fanout(x)
-            increment_tape_fanout(y)
-            return make_tape(ad_minus(tape_primal(x), tape_primal(y)),
-                             [1, -1],
-                             [x, y],
-                             0,
-                             0)
-        else:
-            return ad_minus(x, lift_primal_to_tape(y))
-    else:
-        if is_tape(y):
-            return ad_minus(lift_primal_to_tape(x), y)
-        else:
-            return x-y
+def lift_real_to_real(f, dfdx):
+    def me(x):
+        if isinstance(x, cobundle):
+            return cobun(me(x.prim), [dfdx(x.prim)], [x.tape])
+        else: return f(x)
+    return me
 
-def ad_times(x, y):
-    if is_tape(x):
-        if is_tape(y):
-            increment_tape_fanout(x)
-            increment_tape_fanout(y)
-            return make_tape(ad_times(tape_primal(x), tape_primal(y)),
-                             [tape_primal(y), tape_primal(x)],
-                             [x, y],
-                             0,
-                             0)
+def lift_real_cross_real_to_real(f, dfdx1, dfdx2):
+    def me(x1, x2):
+        if isinstance(x1, cobundle):
+            if isinstance(x2, cobundle):
+                return cobun(me(x1.prim, x2.prim),
+                             [dfdx1(x1.prim, x2.prim),
+                              dfdx2(x1.prim, x2.prim)],
+                             [x1.tape, x2.tape])
+            else:
+                return cobun(me(x1.prim, x2), [dfdx1(x1.prim, x2)], [x1.tape])
         else:
-            return ad_times(x, lift_primal_to_tape(y))
-    else:
-        if is_tape(y):
-            return ad_times(lift_primal_to_tape(x), y)
-        else:
-            return x*y
+            if isinstance(x2, cobundle):
+                return cobun(
+                    me(x1, x2.prim), [dfdx2(x1, x2.prim)], [x2.tape])
+            else: return f(x1, x2)
+    return me
 
-def ad_divide(x, y):
-    if is_tape(x):
-        if is_tape(y):
-            increment_tape_fanout(x)
-            increment_tape_fanout(y)
-            return make_tape(ad_divide(tape_primal(x), tape_primal(y)),
-                             [ad_divide(tape_primal(y),
-                                        ad_times(tape_primal(y),
-                                                 tape_primal(y))),
-                              ad_divide(ad_minus(0, tape_primal(x)),
-                                        ad_times(tape_primal(y),
-                                                 tape_primal(y)))],
-                             [x, y],
-                             0,
-                             0)
-        else:
-            return ad_divide(x, lift_primal_to_tape(y))
-    else:
-        if is_tape(y):
-            return ad_divide(lift_primal_to_tape(x), y)
-        else:
-            return x/y
+def lift_real_cross_real_to_boolean(f):
+    def me(x1, x2):
+        if isinstance(x1, cobundle): return me(x1.prim, x2)
+        elif isinstance(x2, cobundle): return me(x1, x2.prim)
+        else: return f(x1, x2)
+    return me
 
-def ad_sqr(x):
-    return ad_times(x, x)
+plus = lift_real_cross_real_to_real(lambda x1, x2: x1+x2,
+                                    lambda x1, x2: 1,
+                                    lambda x1, x2: 1)
 
-def ad_exp(x):
-    if is_tape(x):
-        increment_tape_fanout(x)
-        return make_tape(exp(tape_primal(x)),
-                         [exp(tape_primal(x))],
-                         [x],
-                         0,
-                         0)
-    else:
-        return exp(x)
+minus = lift_real_cross_real_to_real(lambda x1, x2: x1-x2,
+                                     lambda x1, x2: 1,
+                                     lambda x1, x2: -1)
 
-def ad_gt(x, y):
-    if is_tape(x):
-        if is_tape(y):
-            return ad_gt(tape_primal(x), tape_primal(y))
-        else:
-            return ad_gt(x, lift_primal_to_tape(y))
-    else:
-        if is_tape(y):
-            return ad_gt(lift_primal_to_tape(x), y)
-        else:
-            return x>y
+times = lift_real_cross_real_to_real(lambda x1, x2: x1*x2,
+                                     lambda x1, x2: x2,
+                                     lambda x1, x2: x1)
 
-def ad_max(x, y):
-    if ad_gt(x, y):
-        return x
-    else:
-        return y
+divide = lift_real_cross_real_to_real(lambda x1, x2: x1/x2,
+                                      lambda x1, x2: 1/x2,
+                                      lambda x1, x2: -x1/(x2*x2))
 
-def reverse_sweep(cotangent, tape):
-    set_tape_cotangent(tape, tape_cotangent(tape)+cotangent)
-    decrement_tape_fanout(tape)
-    if tape_fanout(tape)==0:
-        cotangent = tape_cotangent(tape)
-        for factor, tape in zip(tape_factors(tape), tape_tapes(tape)):
-            reverse_sweep(cotangent*factor, tape)
+lt = lift_real_cross_real_to_boolean(lambda x1, x2: x1<x2)
+
+le = lift_real_cross_real_to_boolean(lambda x1, x2: x1<=x2)
+
+gt = lift_real_cross_real_to_boolean(lambda x1, x2: x1>x2)
+
+ge = lift_real_cross_real_to_boolean(lambda x1, x2: x1>=x2)
+
+eq = lift_real_cross_real_to_boolean(lambda x1, x2: x1==x2)
+
+ne = lift_real_cross_real_to_boolean(lambda x1, x2: x1!=x2)
+
+exp = lift_real_to_real(math.exp, lambda x: exp(x))
 
 def derivative(f):
-    def inner(x):
-        input = lift_primal_to_tape(x)
-        output = f(input)
-        increment_tape_fanout(output)
-        reverse_sweep(1, output)
-        return tape_cotangent(input)
-    return inner
+    def me(x):
+        if isinstance(x, list): x_reverse = [variable(xi) for xi in x]
+        else: x_reverse = variable(x)
+        return cotg(f(x_reverse), x_reverse)
+    return me
 
-def f1(x):
-    return ad_times(x, x)
+def partial_derivative(f, i): return lambda x: gradient(f)(x)[i]
 
-def f2(x):
-    return ad_times(x, ad_times(x, x))
-
-def f3(x):
-    return ad_plus(ad_times(2, ad_times(x, ad_times(x, x))),
-                   ad_times(4, ad_times(x, x)))
-
-def gradient(f):
-    def inner(xs):
-        inputs = [lift_primal_to_tape(x) for x in xs]
-        output = f(inputs)
-        increment_tape_fanout(output)
-        reverse_sweep(1, output)
-        return [tape_cotangent(input) for input in inputs]
-    return inner
-
-def f4(x):
-    return ad_plus(ad_times(x[0], x[0]),
-                   ad_times(x[1], ad_times(x[1], x[1])))
+gradient = derivative

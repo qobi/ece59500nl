@@ -1,172 +1,97 @@
-# A simple minimal implementation of forward-mode automatic differentiation
-# (AD).
-# This does not handle nesting.
+import math
 
-# Beda, L.M., Korolev, L.N., Sukkikh, N.V., and Frolov, T.S., Programs for
-# Automatic Differentiation for the Machine BESM, Institute for Precise
-# Mechanics and Computation Techniques, Academy of Science, Moscow, USSR,
-# 1959.
+class bundle:
+    def __init__(self, prim, tg):
+        self.prim = prim
+        self.tg = tg
+    def __pos__(self): return self
+    def __neg__(self): return 0-self
+    def __add__(self, y): return plus(self, y)
+    def __radd__(self, x): return plus(x, self)
+    def __sub__(self, y): return minus(self, y)
+    def __rsub__(self, x): return minus(x, self)
+    def __mul__(self, y): return times(self, y)
+    def __rmul__(self, x): return times(x, self)
+    def __div__(self, y): return divide(self, y)
+    def __rdiv__(self, x): return divide(x, self)
+    def __truediv__(self, y): return divide(self, y)
+    def __rtruediv__(self, x): return divide(x, self)
+    def __lt__(self, x): return lt(self, x)
+    def __le__(self, x): return le(self, x)
+    def __gt__(self, x): return gt(self, x)
+    def __ge__(self, x): return ge(self, x)
+    def __eq__(self, x): return eq(self, x)
+    def __ne__(self, x): return ne(self, x)
 
-# Wengert, R.E., A simple automatic derivative evaluation program,
-# CACM, 7(8):463-4, 1964.
+def bun(x, x_tangent): return bundle(x, x_tangent)
 
-# Siskind, J.M. and Pearlmutter, B.A., Nesting Forward-Mode AD in a
-# Functional Framework, HOSC, 21(4):361-76, 2008.
+def prim(x):
+    if isinstance(x, bundle): return x.prim
+    else: return x
 
-# A real implementation would use reverse-mode AD. We use forward mode just
-# for pedagogical purposes so that we can derive everything easily from
-# first principles.
+def tg(x):
+    if isinstance(x, bundle): return x.tg
+    else: return 0
 
-from math import exp
+def lift_real_to_real(f, dfdx):
+    def me(x):
+        if isinstance(x, bundle): return bun(me(prim(x)), dfdx(prim(x))*tg(x))
+        else: return f(x)
+    return me
 
-def make_dual_number(primal, tangent):
-    return (primal, tangent)
+def lift_real_cross_real_to_real(f, dfdx1, dfdx2):
+    def me(x1, x2):
+        if isinstance(x1, bundle) or isinstance(x2, bundle):
+            return bun(me(prim(x1), prim(x2)),
+                       (dfdx1(prim(x1), prim(x2))*tg(x1)
+                        +dfdx2(prim(x1), prim(x2))*tg(x2)))
+        else: return f(x1, x2)
+    return me
 
-def dual_number_primal(dual_number):
-    (primal, tangent) = dual_number
-    return primal
+def lift_real_cross_real_to_boolean(f):
+    def me(x1, x2):
+        if isinstance(x1, bundle): return me(prim(x1), x2)
+        elif isinstance(x2, bundle): return me(x1, prim(x2))
+        else: return f(x1, x2)
+    return me
 
-def dual_number_tangent(dual_number):
-    (primal, tangent) = dual_number
-    return tangent
+plus = lift_real_cross_real_to_real(lambda x1, x2: x1+x2,
+                                    lambda x1, x2: 1,
+                                    lambda x1, x2: 1)
 
-def is_dual_number(thing):
-    return type(thing)==tuple
+minus = lift_real_cross_real_to_real(lambda x1, x2: x1-x2,
+                                     lambda x1, x2: 1,
+                                     lambda x1, x2: -1)
 
-def lift_primal_to_dual(primal):
-    return make_dual_number(primal, 0)
+times = lift_real_cross_real_to_real(lambda x1, x2: x1*x2,
+                                     lambda x1, x2: x2,
+                                     lambda x1, x2: x1)
 
-def ad_plus(x, y):
-    if is_dual_number(x):
-        if is_dual_number(y):
-            return make_dual_number(ad_plus(dual_number_primal(x),
-                                            dual_number_primal(y)),
-                                    ad_plus(dual_number_tangent(x),
-                                            dual_number_tangent(y)))
-        else:
-            return ad_plus(x, lift_primal_to_dual(y))
-    else:
-        if is_dual_number(y):
-            return ad_plus(lift_primal_to_dual(x), y)
-        else:
-            return x+y
+divide = lift_real_cross_real_to_real(lambda x1, x2: x1/x2,
+                                      lambda x1, x2: 1/x2,
+                                      lambda x1, x2: -x1/(x2*x2))
 
-def ad_minus(x, y):
-    if is_dual_number(x):
-        if is_dual_number(y):
-            return make_dual_number(ad_minus(dual_number_primal(x),
-                                             dual_number_primal(y)),
-                                    ad_minus(dual_number_tangent(x),
-                                             dual_number_tangent(y)))
-        else:
-            return ad_minus(x, lift_primal_to_dual(y))
-    else:
-        if is_dual_number(y):
-            return ad_minus(lift_primal_to_dual(x), y)
-        else:
-            return x-y
+lt = lift_real_cross_real_to_boolean(lambda x1, x2: x1<x2)
 
-def ad_times(x, y):
-    if is_dual_number(x):
-        if is_dual_number(y):
-            return make_dual_number(
-                ad_times(dual_number_primal(x), dual_number_primal(y)),
-                ad_plus(ad_times(dual_number_primal(x),
-                                 dual_number_tangent(y)),
-                        ad_times(dual_number_tangent(x),
-                                 dual_number_primal(y))))
-        else:
-            return ad_times(x, lift_primal_to_dual(y))
-    else:
-        if is_dual_number(y):
-            return ad_times(lift_primal_to_dual(x), y)
-        else:
-            return x*y
+le = lift_real_cross_real_to_boolean(lambda x1, x2: x1<=x2)
 
-def ad_divide(x, y):
-    if is_dual_number(x):
-        if is_dual_number(y):
-            return make_dual_number(
-                ad_divide(dual_number_primal(x), dual_number_primal(y)),
-                ad_divide(
-                    ad_minus(ad_times(dual_number_primal(y),
-                                      dual_number_tangent(x)),
-                             ad_times(dual_number_primal(x),
-                                      dual_number_tangent(y))),
-                    ad_times(dual_number_primal(y), dual_number_primal(y))))
-        else:
-            return ad_divide(x, lift_primal_to_dual(y))
-    else:
-        if is_dual_number(y):
-            return ad_divide(lift_primal_to_dual(x), y)
-        else:
-            return x/y
+gt = lift_real_cross_real_to_boolean(lambda x1, x2: x1>x2)
 
-def ad_sqr(x):
-    return ad_times(x, x)
+ge = lift_real_cross_real_to_boolean(lambda x1, x2: x1>=x2)
 
-def ad_exp(x):
-    if is_dual_number(x):
-        return make_dual_number(
-            exp(dual_number_primal(x)),
-            ad_times(dual_number_tangent(x), exp(dual_number_primal(x))))
-    else:
-        return exp(x)
+eq = lift_real_cross_real_to_boolean(lambda x1, x2: x1==x2)
 
-def ad_gt(x, y):
-    if is_dual_number(x):
-        if is_dual_number(y):
-            return ad_gt(dual_number_primal(x), dual_number_primal(y))
-        else:
-            return ad_gt(x, lift_primal_to_dual(y))
-    else:
-        if is_dual_number(y):
-            return ad_gt(lift_primal_to_dual(x), y)
-        else:
-            return x>y
+ne = lift_real_cross_real_to_boolean(lambda x1, x2: x1!=x2)
 
-def ad_max(x, y):
-    if ad_gt(x, y):
-        return x
-    else:
-        return y
+exp = lift_real_to_real(math.exp, lambda x: exp(x))
 
-def derivative(f):
-    def inner(x):
-        return dual_number_tangent(f(make_dual_number(x, 1)))
-    return inner
-
-def f1(x):
-    return ad_times(x, x)
-
-def f2(x):
-    return ad_times(x, ad_times(x, x))
-
-def f3(x):
-    return ad_plus(ad_times(2, ad_times(x, ad_times(x, x))),
-                   ad_times(4, ad_times(x, x)))
+def derivative(f): return lambda x: tg(f(bun(x, 1)))
 
 def replace_ith(x, i, xi):
-    result = []
-    for j in range(0, len(x)):
-        if j==i:
-            result.append(xi)
-        else:
-            result.append(x[j])
-    return result
+    return [xi if j==i else x[j] for j in range(len(x))]
 
 def partial_derivative(f, i):
-    def outer(x):
-        def inner(xi):
-            return f(replace_ith(x, i, xi))
-        return derivative(inner)(x[i])
-    return outer
-
-def f4(x):
-    return ad_plus(ad_times(x[0], x[0]),
-                   ad_times(x[1], ad_times(x[1], x[1])))
+    return lambda x: derivative(lambda xi: f(replace_ith(x, i, xi)))(x[i])
 
 def gradient(f):
-    def inner(x):
-        return [partial_derivative(f, i)(x) for i in range(0, len(x))]
-    return inner
+    return lambda x: [partial_derivative(f, i)(x) for i in range(len(x))]

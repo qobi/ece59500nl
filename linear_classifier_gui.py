@@ -8,11 +8,9 @@ bias = 0
 
 def redisplay():
     get_axes().clear()
-    for i in range(0, len(points)):
-        if labels[i]<0:
-            get_axes().plot([points[i][0]], [points[i][1]], "r+")
-        else:
-            get_axes().plot([points[i][0]], [points[i][1]], "b+")
+    for i in range(len(points)):
+        if labels[i]<0: get_axes().plot([points[i][0]], [points[i][1]], "r+")
+        else: get_axes().plot([points[i][0]], [points[i][1]], "b+")
     if len(weights)==2:
         get_axes().plot([0, 1],
                         [-(weights[0]*0+bias)/weights[1],
@@ -36,8 +34,7 @@ def initialize_command():
         weights, bias = initialize(points, labels)
         message("{:.3f}".format(cost(points, labels, weights, bias)))
         redisplay()
-    if not all_labels(labels):
-        message("Missing class")
+    if not all_labels(labels): message("Missing class")
     else:
         message("Training")
         get_window().after(10, internal)
@@ -48,8 +45,7 @@ def step_command():
         weights, bias = step(points, labels, weights, bias)
         message("{:.3f}".format(cost(points, labels, weights, bias)))
         redisplay()
-    if not all_labels(labels):
-        message("Missing class")
+    if not all_labels(labels): message("Missing class")
     else:
         message("Training")
         get_window().after(10, internal)
@@ -60,8 +56,7 @@ def train_command():
         weights, bias = train(points, labels)
         message("{:.3f}".format(cost(points, labels, weights, bias)))
         redisplay()
-    if not all_labels(labels):
-        message("Missing class")
+    if not all_labels(labels): message("Missing class")
     else:
         message("Training")
         get_window().after(10, internal)
@@ -69,13 +64,11 @@ def train_command():
 def all_command():
     resolution = 50
     scale = 1.0/resolution
-    for y in range(0, resolution+1):
-        for x in range(0, resolution+1):
+    for y in range(resolution+1):
+        for x in range(resolution+1):
             label = classify([scale*x, scale*y], weights, bias)
-            if label<0:
-                get_axes().plot([scale*x], [scale*y], "r.")
-            else:
-                get_axes().plot([scale*x], [scale*y], "b.")
+            if label<0: get_axes().plot([scale*x], [scale*y], "r.")
+            else: get_axes().plot([scale*x], [scale*y], "b.")
     redraw()
 
 def click(x, y):
@@ -91,14 +84,11 @@ def click(x, y):
         get_axes().plot([x], [y], "b+")
         redraw()
     else:
-        if len(weights)==0:
-            message("Train first")
+        if len(weights)==0: message("Train first")
         else:
             label = classify([x, y], weights, bias)
-            if label<0:
-                message("Red")
-            else:
-                message("Blue")
+            if label<0: message("Red")
+            else: message("Blue")
 
 add_button(0, 0, "Clear", clear_command, nothing)
 mode = add_radio_button_group([[0, 1, "Red", 0],
