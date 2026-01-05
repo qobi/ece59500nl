@@ -1,4 +1,5 @@
 import numpy as np
+from functools import reduce
 
 def L2_scalar(p1, p2):
     return (p1-p2)*(p1-p2)
@@ -9,7 +10,7 @@ def plus(x, y):
 def L2_vector(distance):
     def internal(p1, p2):
         return reduce(plus,
-                      [distance(p1[i], p2[i]) for i in range(0, len(p1))],
+                      [distance(p1[i], p2[i]) for i in range(len(p1))],
                       0)
     return internal
 
@@ -36,7 +37,7 @@ def dtw_with_image(distance):
         m = len(s1)
         n = len(s2)
         c = np.zeros((m, n))
-        b = [[False for j in range(0, n)] for i in range(0, m)]
+        b = [[False for j in range(n)] for i in range(m)]
         image = np.ones((m, n))
         c[0, 0] = distance(s1[0], s2[0])
         for i in range(1, m):
@@ -141,7 +142,7 @@ def point_with_minimum_average_distance(distance):
 
 def invert(distance):
     def internal(point1, point2):
-        return distance(point1, point1)
+        return distance(point2, point1)
     return internal
 
 def bidirectional(distance, aggregate):

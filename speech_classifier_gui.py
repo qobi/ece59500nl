@@ -43,15 +43,15 @@ def clear_command():
     get_axes().clear()
     redraw()
 
-def dog_command():
+def automobile_command():
     message("")
     points.append(stop_recording())
-    labels.append("Dog")
+    labels.append("Automobile")
 
-def cat_command():
+def airplane_command():
     message("")
     points.append(stop_recording())
-    labels.append("Cat")
+    labels.append("Airplane")
 
 def classify_command():
     message("")
@@ -61,8 +61,8 @@ def classify_command():
         message(classify(stop_recording(), distance, points, labels))
 
 add_button(0, 0, "Clear", clear_command, nothing)
-add_button(0, 1, "Dog", start_recording(10, False), dog_command)
-add_button(0, 2, "Cat", start_recording(10, False), cat_command)
+add_button(0, 1, "Automobile", start_recording(10, False), automobile_command)
+add_button(0, 2, "Airplane", start_recording(10, False), airplane_command)
 add_button(0, 3, "Classify", start_recording(10, True), classify_command)
 add_button(0, 4, "Exit", done, nothing)
 message = add_message(1, 0, 5)

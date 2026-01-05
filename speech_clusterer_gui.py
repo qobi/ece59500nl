@@ -103,19 +103,30 @@ def loop_command():
         internal(infinity)
 
 def play_command():
-    for i in range(0, len(waveforms)):
+    global i
+    i = 0
+    def internal1():
+        global i
+        if i>=len(waveforms):
+            return
         if labels[i]==0:
-            message("Dog")
+            message("Automobile")
         elif labels[i]==1:
-            message("Cat")
+            message("Airplane")
         else:
             message("Unlabeled")
         get_axes().clear()
         spectrum, freqs, t, im = get_axes().specgram(
             waveforms[i], Fs=sd.default.samplerate)
         redraw()
+        get_window().after(10, internal2)
+    def internal2():
+        global i
         sd.play(waveforms[i])
         time.sleep(float(len(waveforms[i]))/sd.default.samplerate+1)
+        get_window().after(10, internal1)
+        i += 1
+    internal1()
 
 add_button(0, 0, "Clear", clear_command, nothing)
 add_button(0, 1, "Record", start_recording(10), record_command)

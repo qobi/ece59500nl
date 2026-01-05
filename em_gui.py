@@ -12,13 +12,13 @@ variances = []
 def redisplay():
     get_axes().clear()
     get_axes().clear()
-    for i in range(0, len(points)):
+    for i in range(len(points)):
         if labels[i][0]>labels[i][1]:
             get_axes().plot([points[i][0]], [points[i][1]], "r+")
         elif labels[i][0]<=labels[i][1]:
             get_axes().plot([points[i][0]], [points[i][1]], "b+")
     if len(means)==2:
-        for j in range(0, 2):
+        for j in range(2):
             ellipse_x = []
             ellipse_y = []
             w, v = eigh(variances[j])
@@ -31,7 +31,7 @@ def redisplay():
             rxy = -sin(t0)
             ryx = -rxy
             ryy = rxx
-            for l in range(0, 37):
+            for l in range(37):
                 x = a*sin(radians(10*l))
                 y = b*cos(radians(10*l))
                 ellipse_x.append(rxx*x+rxy*y+x0)

@@ -1,5 +1,5 @@
 from numpy.linalg import inv, det
-from numpy import pi, sqrt, exp, dot, sum, product, outer, transpose, array
+from numpy import pi, sqrt, exp, dot, sum, prod, outer, transpose, array
 from random import random
 
 def distance(x, mean, variance):
@@ -13,7 +13,7 @@ def normalize(l):
     return (1.0/sum(l))*array(l)
 
 def random_labels(points, k):
-    return [normalize([random() for j in range(0, k)]) for point in points]
+    return [normalize([random() for j in range(k)]) for point in points]
 
 def weighted_mean(weights, points):
     return ((1.0/sum(weights))*
@@ -44,10 +44,10 @@ def reclassify_all(points, mixture_proportions, means, variances):
             for point in points]
 
 def likelihood(points, mixture_proportions, means, variances):
-    return product([sum([mixture_proportion*gaussian(point, mean, variance)
-                         for mixture_proportion, mean, variance
-                         in zip(mixture_proportions, means, variances)])
-                    for point in points])
+    return prod([sum([mixture_proportion*gaussian(point, mean, variance)
+                      for mixture_proportion, mean, variance
+                      in zip(mixture_proportions, means, variances)])
+                 for point in points])
 
 def all_labeled(labels):
     for label in labels:
@@ -58,7 +58,7 @@ def all_labeled(labels):
 def all_labels(labels, k):
     if len(labels)==0:
         return False
-    for j in range(0, k):
+    for j in range(k):
         if sum(array(labels)[:, j])==0:
             return False
     return True

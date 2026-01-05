@@ -3,6 +3,27 @@ def plus(x, y):
 
 plus(3, 4)
 
+def plus(u):
+    x, y = u
+    return x+y
+
+plus((3, 4))
+
+# Tupling
+
+def plus((x, y)):
+    return x+y
+
+def pm(x, y):
+    return x+y, x-y
+
+u, v = pm(3, 4)
+
+def pm(x, y):
+    return (x+y, x-y)
+
+(u, v) = pm(3, 4)
+
 def plus(x):
     def internal(y):
         return x+y
@@ -24,9 +45,21 @@ def f(x):
 # Lambda expressions
 # Lambda calculus (Alonzo Church)
 
-lambda x: 2x+1
+lambda x: 2*x+1
 
-f = lambda x: 2x+1
+(lambda x: 2*x+1)(3)
+
+f = lambda x: 2*x+1
+
+f(3)
+
+lambda x, y: x+y
+
+(lambda x, y: x+y)(3, 4)
+
+plus = lambda x, y: x+y
+
+plus(3, 4)
 
 def plus(x):
     internal = lambda y: x+y
@@ -45,19 +78,19 @@ plus((3, 4))
 
 # ML style
 
-#def plus((x, y)):
+def plus((x, y)):
      return x+y
 
-#plus((3, 4))
+plus((3, 4))
 
 # Haskell style
 
-# def plus x y:
+def plus x y:
      return x+y
 
-# plus(3)(4)
+plus(3)(4)
 
-# plus 3 4
+plus 3 4
 
 def f(x, y):
     return x+y, x-y
@@ -126,10 +159,20 @@ u, v = f(x, y)
 
 # primitive types: object boolean
 # typedef S = boolean
+# typedef VP = alpha
+# typedef N = object->S
+# typedef A = N->N
+# typedef PP = N<-N
+# typedef P = NP->(N<-N)
+# typedef NP = beta
+
+# primitive types: object boolean
+# typedef S = boolean
 # typedef VP = S<-NP
 # typedef N = object->S
-# typedef P = NP->(N<-N)
+# typedef A = N->N
 # typedef PP = N<-N
+# typedef P = NP->(N<-N)
 # typedef NP = N->S
 # typedef Vintrans = S<-NP
 # typedef D = N->NP

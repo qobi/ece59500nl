@@ -1,4 +1,4 @@
-//  gcc -o lexical lexical.c
+// gcc -o lexical lexical.c
 // ./lexical
 // This demonstrates why lexical closures do NOT work in GNU C.
 

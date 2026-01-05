@@ -18,8 +18,8 @@ def clear_command():
 def all_command():
     resolution = 50
     scale = 1.0/resolution
-    for y in range(0, resolution+1):
-        for x in range(0, resolution+1):
+    for y in range(resolution+1):
+        for x in range(resolution+1):
             label = classify([scale*x, scale*y], distance, points, labels)
             if label==0:
                 get_axes().plot([scale*x], [scale*y], "r.")

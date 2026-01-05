@@ -8,7 +8,7 @@ means = []
 
 def redisplay():
     get_axes().clear()
-    for i in range(0, len(points)):
+    for i in range(len(points)):
         if labels[i]==0:
             get_axes().plot([points[i][0]], [points[i][1]], "r+")
         elif labels[i]==1:
@@ -44,8 +44,8 @@ def train_command():
 def all_command():
     resolution = 50
     scale = 1.0/resolution
-    for y in range(0, resolution+1):
-        for x in range(0, resolution+1):
+    for y in range(resolution+1):
+        for x in range(resolution+1):
             label = classify([scale*x, scale*y], means)
             if label==0:
                 get_axes().plot([scale*x], [scale*y], "r.")

@@ -1,5 +1,6 @@
 from distances import *
 import random
+from functools import reduce
 
 def distance(p1, p2):
     return (p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1])
@@ -15,7 +16,7 @@ def random_labels(points, k):
 
 def points_with_label(label, points, labels):
     result = []
-    for i in range(0, len(points)):
+    for i in range(len(points)):
         if labels[i]==label:
             result.append(points[i])
     return result
@@ -25,17 +26,17 @@ def mean(points):
 
 def train(points, labels):
     k = 0
-    for i in range(0, len(points)):
+    for i in range(len(points)):
         if labels[i]>k:
             k = labels[i]+1
-    return [mean(points_with_label(j, points, labels)) for j in range(0, k)]
+    return [mean(points_with_label(j, points, labels)) for j in range(k)]
 
 infinity = float("inf")
 
 def classify(point, means):
     best_distance = infinity
     best_label = -1
-    for j in range(0, len(means)):
+    for j in range(len(means)):
         d = distance(point, means[j])
         if d<best_distance:
             best_distance = d
@@ -51,7 +52,7 @@ def cost(points, labels, means):
                           [distance(point, means[j])
                            for point in points_with_label(j, points, labels)],
                           0)
-                   for j in range(0, len(means))],
+                   for j in range(len(means))],
                   0)
 
 def all_labeled(labels):
@@ -61,7 +62,7 @@ def all_labeled(labels):
     return True
 
 def all_labels(labels, k):
-    for j in range(0, k):
+    for j in range(k):
         if len(points_with_label(j, labels, labels))==0:
             return False
     return True

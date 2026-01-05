@@ -3,7 +3,7 @@ from numpy.random import random, choice
 
 def check(w, a, b, c):
     L = len(w)
-    I = max([len(w[l]) for l in range(0, L)])
+    I = max([len(w[l]) for l in range(L)])
     J = len(b)
     K = c.shape[1]
     if len(a.shape)!=3 or a.shape[0]!=J or a.shape[1]!=J or a.shape[2]!=J:
@@ -21,16 +21,16 @@ def check(w, a, b, c):
 def calculate_alpha(w, a, b, c):
     I, J, K, L = check(w, a, b, c)
     alpha = zeros([L, I, I, J])
-    for l in range(0, L):
-        for j in range(0, J):
-            for i in range(0, len(w[l])):
+    for l in range(L):
+        for j in range(J):
+            for i in range(len(w[l])):
                 alpha[l, i, i, j] = c[j, w[l][i]]
         for d in range(2, len(w[l])+1):
-            for i1 in range(0, len(w[l])-d+1):
+            for i1 in range(len(w[l])-d+1):
                 i2 = i1+d-1
-                for j in range(0, J):
-                    for j1 in range(0, J):
-                        for j2 in range(0, J):
+                for j in range(J):
+                    for j1 in range(J):
+                        for j2 in range(J):
                             for i in range(i1, i2):
                                 alpha[l, i1, i2, j] += (
                                     a[j, j1, j2]*
@@ -41,16 +41,16 @@ def calculate_alpha(w, a, b, c):
 def calculate_beta(w, a, b, c, alpha):
     I, J, K, L = check(w, a, b, c)
     beta = zeros([L, I, I, J])
-    for l in range(0, L):
-        for j in range(0, J):
+    for l in range(L):
+        for j in range(J):
             beta[l, 0, len(w[l])-1, j] = b[j]
         for d in range(len(w[l])-1, 0, -1):
-            for i1 in range(0, len(w[l])-d+1):
+            for i1 in range(len(w[l])-d+1):
                 i2 = i1+d-1
-                for j in range(0, J):
-                    for j1 in range(0, J):
-                        for j2 in range(0, J):
-                            for i in range(0, i1):
+                for j in range(J):
+                    for j1 in range(J):
+                        for j2 in range(J):
+                            for i in range(i1):
                                 beta[l, i1, i2, j] += (
                                     a[j1, j2, j]*
                                     alpha[l, i, i1-1, j2]*
@@ -64,12 +64,12 @@ def calculate_beta(w, a, b, c, alpha):
 
 def random_gamma(w, J):
     L = len(w)
-    I = max([len(w[l]) for l in range(0, L)])
+    I = max([len(w[l]) for l in range(L)])
     gamma = zeros([L, I, I, J])
-    for l in range(0, L):
-        for i1 in range(0, len(w[l])):
+    for l in range(L):
+        for i1 in range(len(w[l])):
             for i2 in range(i1, len(w[l])):
-                for j in range(0, J):
+                for j in range(J):
                     gamma[l, i1, i2, j] = random()
                 gamma[l, i1, i2, :] /= sum(gamma[l, i1, i2, :])
     return gamma
@@ -79,10 +79,10 @@ def calculate_gamma(w, a, b, c):
     alpha = calculate_alpha(w, a, b, c)
     beta = calculate_beta(w, a, b, c, alpha)
     gamma = zeros([L, I, I, J])
-    for l in range(0, L):
-        for i1 in range(0, len(w[l])):
+    for l in range(L):
+        for i1 in range(len(w[l])):
             for i2 in range(i1, len(w[l])):
-                for j in range(0, J):
+                for j in range(J):
                     gamma[l, i1, i2, j] = alpha[l, i1, i2, j]*beta[l, i1, i2, j]
                 if sum(gamma[l, i1, i2, :])!=0:
                     gamma[l, i1, i2, :] /= sum(gamma[l, i1, i2, :])
@@ -100,22 +100,22 @@ def train(w, gamma):
     a = zeros([J, J, J])
     b = zeros([J])
     c = zeros([J, K])
-    for j in range(0, J):
-        for j1 in range(0, J):
-            for j2 in range(0, J):
-                for l in range(0, L):
-                    for i1 in range(0, len(w[l])-1):
+    for j in range(J):
+        for j1 in range(J):
+            for j2 in range(J):
+                for l in range(L):
+                    for i1 in range(len(w[l])-1):
                         for i3 in range(i1+1, len(w[l])):
                             for i2 in range(i1, i3):
                                 a[j, j1, j2] += (
                                     gamma[l, i1, i3, j]*
                                     gamma[l, i1, i2, j1]*
                                     gamma[l, i2+1, i3, j2])
-        for l in range(0, L):
+        for l in range(L):
             b[j] += gamma[l, 0, len(w[l])-1, j]
-        for k in range(0, K):
-            for l in range(0, L):
-                for i in range(0, len(w[l])):
+        for k in range(K):
+            for l in range(L):
+                for i in range(len(w[l])):
                     if w[l][i]==k:
                         c[j, k] += gamma[l, i, i, j]
         denominator = sum(c[j, :])+sum(a[j, :, :])
@@ -128,9 +128,9 @@ def likelihood(w, a, b, c):
     I, J, K, L = check(w, a, b, c)
     alpha = calculate_alpha(w, a, b, c)
     p = 1
-    for l in range(0, L):
+    for l in range(L):
         pl = 0
-        for j in range(0, J):
+        for j in range(J):
             pl += b[j]*alpha[l, 0, len(w[l])-1, j]
         p *= pl
     return p
@@ -140,9 +140,9 @@ def alternate_likelihood(w, a, b, c):
     beta = calculate_beta(w, a, b, c, calculate_alpha(w, a, b, c))
     p = 1
     i = 0
-    for l in range(0, L):
+    for l in range(L):
         pl = 0
-        for j in range(0, J):
+        for j in range(J):
             pl += c[j, w[l][i]]*beta[l, i, i, j]
         p *= pl
     return p
@@ -150,9 +150,9 @@ def alternate_likelihood(w, a, b, c):
 def sample(a, b, c):
     J = len(b)
     K = c.shape[1]
-    j = choice(range(0, J), 1, p=b)[0]
+    j = choice(range(J), 1, p=b)[0]
     def s(j):
-        r = int(choice(range(0, K+J**2),
+        r = int(choice(range(K+J**2),
                        1,
                        p=concatenate((c[j, :], a[j, :, :].flatten())))[0])
         if r<K:
@@ -162,7 +162,7 @@ def sample(a, b, c):
     return s(j)
 
 def samples(a, b, c, L):
-    return [sample(a, b, c) for l in range(0, L)]
+    return [sample(a, b, c) for l in range(L)]
 
 def model1():
     a = array([[[1./3]]])

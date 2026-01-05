@@ -1,5 +1,3 @@
-import numpy as np
-
 def fib(n):
     if n==0:
         return 0
@@ -14,7 +12,7 @@ def fib1(n):
     elif n==1:
         return 1
     else:
-        chart = np.zeros((n+1,), dtype=np.int)
+        chart = {}
         chart[0] = 0
         chart[1] = 1
         for i in range(2, n+1):

@@ -23,7 +23,8 @@ class bundle:
     def __eq__(self, x): return eq(self, x)
     def __ne__(self, x): return ne(self, x)
 
-def bun(x, x_tangent): return bundle(x, x_tangent)
+def bun(x, x_tangent):
+    return bundle(x, x_tangent)
 
 def prim(x):
     if isinstance(x, bundle): return x.prim

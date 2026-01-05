@@ -33,12 +33,12 @@ def stop_recording():
     time.sleep(float(len(waveform))/sd.default.samplerate)
     return np.transpose(spectrum)
 
-def dog_command():
+def automobile_command():
     message("")
     global points1
     points1 = stop_recording()
 
-def cat_command():
+def airplane_command():
     message("")
     global points2
     points2 = stop_recording()
@@ -53,8 +53,8 @@ def distance_command():
         get_axes().imshow(image, cmap="gray")
     redraw()
 
-add_button(0, 0, "Dog", start_recording(10, False), dog_command)
-add_button(0, 1, "Cat", start_recording(10, False), cat_command)
+add_button(0, 0, "Automobile", start_recording(10, False), automobile_command)
+add_button(0, 1, "Airplane", start_recording(10, False), airplane_command)
 add_button(0, 2, "Distance", distance_command, nothing)
 add_button(0, 3, "Exit", done, nothing)
 message = add_message(1, 0, 4)

@@ -206,3 +206,19 @@ def shift_reduce_meaning(words):
         return False
     else:
         raise RuntimeError("This shouldn't happen")
+
+# top_down_meaning(("some", "pawn", "is", "on", "some", "square"))
+# top_down_meaning(("every", "pawn", "is", "on", "some", "every"))
+# top_down_meaning(("every", "pawn", "is", "on", "every", "square"))
+# top_down_meaning(("every", "pawn", "is", "on", "some", "square"))
+# top_down_meaning(("some", "rook", "is", "on", "some", "square"))
+# top_down_meaning(("every", "black", "bishop", "on", "some", "corner", "is", "on", "some", "square"))
+# top_down_meaning(("every", "black", "rook", "on", "some", "corner", "is", "on", "some", "square"))
+
+# shift_reduce_meaning(("some", "pawn", "is", "on", "some", "square"))
+# shift_reduce_meaning(("every", "pawn", "is", "on", "some", "every"))
+# shift_reduce_meaning(("every", "pawn", "is", "on", "every", "square"))
+# shift_reduce_meaning(("every", "pawn", "is", "on", "some", "square"))
+# shift_reduce_meaning(("some", "rook", "is", "on", "some", "square"))
+# shift_reduce_meaning(("every", "black", "bishop", "on", "some", "corner", "is", "on", "some", "square"))
+# shift_reduce_meaning(("every", "black", "rook", "on", "some", "corner", "is", "on", "some", "square"))

@@ -1,30 +1,30 @@
 (define (a-common-noun)
- (either '(dog) '(cat) '(bus) '(pair) '(apple) '(keyboard) '(book) '(weed)
-	 '(microphone)))
+ (either '(cat) '(chair) '(blueberry) '(ice-cream) '(dumpster) '(computer)
+	 '(weed) '(hair)))
 
 (define (a-proper-noun)
- (either '(Lafayette) '(Apple) '(Professor-Siskind) '(Mitch-Daniels)
-	 '(Taylor-Swift) '(Lady-Gaga)))
+ (either '(Japan) '(Purdue) '(Chipotle) '(Yosemite) '(Donald-Trump)
+	 '(Mung-Chiang) '(Elon-Musk) '(Bradon-Smith) '(Taylor-Swift)))
 
 (define (a-determiner)
  (either '(the) '(a) '(some) '(every) '(forty-two)))
 
 ;;; NP -> Nprop
-;;;    |  DET Ncommon
+;;;    | DET Ncommon
 
 (define (a-noun-phrase)
  (either (a-proper-noun)
 	 (append (a-determiner) (a-common-noun))))
 
 (define (an-intransitive-verb)
- (either '(dies) '(runs) '(ate) '(smoked) '(typed) '(fell) '(jumped)
-	 '(happened)))
+ (either '(ran) '(spoke) '(ate) '(swam) '(juggled) '(failed) '(passed)
+	 '(vomited) '(slept) '(screwed-up)))
 
 (define (a-transitive-verb)
- (either '(ate) '(smoked) '(drank) '(sang) '(kissed) '(fired) '(took)))
+ (either '(pushed) '(pulled) '(slapped) '(kissed) '(smoked) '(fought) '(fired)))
 
-;;; VP -> Vintans
-;;;  |    Vtrans NP
+;;; VP -> Vintrans
+;;;    |  Vtrans NP
 
 (define (a-verb-phrase)
  (either (an-intransitive-verb)
@@ -35,5 +35,5 @@
 (define (a-sentence)
  (append (a-noun-phrase) (a-verb-phrase)))
 
-(define (slow-sentence? words)
+(define (sentence? words)
  (not (not (member words (all-values (a-sentence))))))

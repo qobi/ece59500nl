@@ -1,5 +1,5 @@
 # ece59500nl
-Course material for Purdue ECE59500NL Natural Language Processing
+Course material for Purdue ECE49595NL/ECE59500NL Natural Language Processing
 
 #### ACKNOWLEDGMENTS
 

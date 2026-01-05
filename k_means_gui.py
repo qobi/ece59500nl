@@ -8,7 +8,7 @@ means = []
 
 def redisplay():
     get_axes().clear()
-    for i in range(0, len(points)):
+    for i in range(len(points)):
         if labels[i]==0:
             get_axes().plot([points[i][0]], [points[i][1]], "r+")
         elif labels[i]==1:

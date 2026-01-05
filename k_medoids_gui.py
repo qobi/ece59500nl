@@ -10,7 +10,7 @@ distance = L2_vector(L2_scalar)
 
 def redisplay():
     get_axes().clear()
-    for i in range(0, len(points)):
+    for i in range(len(points)):
         if labels[i]==0:
             get_axes().plot([points[i][0]], [points[i][1]], "r+")
         elif labels[i]==1:
@@ -56,7 +56,6 @@ def reclassify_all_command():
         labels = reclassify_all(distance, points, medoids)
         message("{:.3f}".format(cost(distance, points, labels, medoids)))
         redisplay()
-
     if len(medoids)==0:
         message("Train first")
     else:
