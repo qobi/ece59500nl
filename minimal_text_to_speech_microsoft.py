@@ -30,5 +30,5 @@ def say(thing_to_say):
                     cancellation_details.error_details))
             print("Did you update the subscription info?")
 set_up()
-say("This is a test of the speech synthesizer for the Purdue experimental undergraduate course in Electrical and Computer Engineering on Natural Language Processing")
+say("This is a test of the speech synthesizer for the Purdue experimental undergraduate and graduate courses in Electrical and Computer Engineering on Natural Language Processing")
 say("This is a simple example.")

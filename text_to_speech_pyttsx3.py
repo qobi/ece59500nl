@@ -56,7 +56,7 @@ def stop():
 
 if __name__=="__main__":
     start()
-    say("This is a test of the speech synthesizer for the Purdue experimental undergraduate course in Electrical and Computer Engineering on Natural Language Processing")
+    say("This is a test of the speech synthesizer for the Purdue experimental undergraduate and graduate courses in Electrical and Computer Engineering on Natural Language Processing")
     say("This is a simple example.")
     while (not speech_to_text_microsoft.listen) or len(things_to_say)>0:
         time.sleep(1)

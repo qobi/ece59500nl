@@ -16,5 +16,5 @@ def say(thing_to_say):
     speech_engine.runAndWait()
 
 set_up()
-say("This is a test of the speech synthesizer for the Purdue experimental undergraduate course in Electrical and Computer Engineering on Natural Language Processing")
+say("This is a test of the speech synthesizer for the Purdue experimental undergraduate and graduate courses in Electrical and Computer Engineering on Natural Language Processing")
 say("This is a simple example.")

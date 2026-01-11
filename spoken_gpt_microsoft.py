@@ -1,7 +1,7 @@
 import text_to_speech_microsoft
 import speech_to_text_microsoft
 import os
-# ~/venv/bin/pip install openai
+# venv/bin/pip install openai
 import openai
 import time
 import keys
