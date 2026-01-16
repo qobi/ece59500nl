@@ -29,7 +29,7 @@ def redisplay():
     get_axes().clear()
     get_axes().clear()
     for i in range(len(points)):
-        if labels[i]==-1:
+        if labels[i]==None:
             get_axes().plot([points[i][0]], [points[i][1]], "g+")
         elif labels[i]==0:
             get_axes().plot([points[i][0]], [points[i][1]], "r+")
@@ -326,7 +326,7 @@ def loop_command():
 
 def lookup(x, y):
     d = infinity
-    j = -1
+    j = None
     for i in range(len(points)):
         if distance(points[i], [x, y])<d:
             d = distance(points[i], [x, y])
@@ -337,7 +337,7 @@ def click(x, y):
     message("")
     if mode()==0:
         points.append([x, y])
-        labels.append(-1)
+        labels.append(None)
         ownerships.append([0, 0])
         get_axes().plot([x], [y], "g+")
         redraw()
@@ -355,15 +355,15 @@ def click(x, y):
         redraw()
     elif mode()==3:
         j = lookup(x, y)
-        if j==-1:
+        if j==None:
             message("No data")
         else:
-            labels[j] = -1
+            labels[j] = None
             ownerships[j] = [0, 0]
         redisplay()
     elif mode()==4:
         j = lookup(x, y)
-        if j==-1:
+        if j==None:
             message("No data")
         else:
             labels[j] = 0
@@ -371,7 +371,7 @@ def click(x, y):
         redisplay()
     elif mode()==5:
         j = lookup(x, y)
-        if j==-1:
+        if j==None:
             message("No data")
         else:
             labels[j] = 1
@@ -379,7 +379,7 @@ def click(x, y):
         redisplay()
     elif mode()==6:
         j = lookup(x, y)
-        if j==-1:
+        if j==None:
             message("No data")
         else:
             del points[j]

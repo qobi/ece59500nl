@@ -9,7 +9,7 @@ points = []
 labels = []
 medoids = []
 
-distance = bidirectional(chamfer(L2_vector(L2_scalar)), plus)
+distance = bidirectional(chamfer(L2_vector(L2_scalar)), lambda x, y: x+y)
 
 def process(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

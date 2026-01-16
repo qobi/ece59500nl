@@ -1,6 +1,5 @@
 from distances import *
 import random
-from functools import reduce
 
 def random_labels(points, k):
     return [random.randint(0, k-1) for point in points]
@@ -41,13 +40,9 @@ def reclassify_all(distance, points, medoids):
     return [classify(point, distance, medoids) for point in points]
 
 def cost(distance, points, labels, medoids):
-    return reduce(plus,
-                  [reduce(plus,
-                          [distance(point, medoids[j])
-                           for point in points_with_label(j, points, labels)],
-                          0)
-                   for j in range(len(medoids))],
-                  0)
+    return sum([sum([distance(point, medoids[j])
+                     for point in points_with_label(j, points, labels)])
+                for j in range(len(medoids))])
 
 def all_labeled(labels):
     for label in labels:

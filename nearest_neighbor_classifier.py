@@ -2,7 +2,7 @@ infinity = float("inf")
 
 def classify(point, distance, points, labels):
     best_distance = infinity
-    best_label = -1
+    best_label = None
     for i in range(len(points)):
         d = distance(point, points[i])
         if d<best_distance:

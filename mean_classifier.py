@@ -47,13 +47,9 @@ def reclassify_all(points, means):
     return [classify(point, means) for point in points]
 
 def cost(points, labels, means):
-    return reduce(plus,
-                  [reduce(plus,
-                          [distance(point, means[j])
-                           for point in points_with_label(j, points, labels)],
-                          0)
-                   for j in range(len(means))],
-                  0)
+    return sum([sum([distance(point, means[j])
+                     for point in points_with_label(j, points, labels)],)
+                for j in range(len(means))])
 
 def all_labeled(labels):
     for label in labels:
